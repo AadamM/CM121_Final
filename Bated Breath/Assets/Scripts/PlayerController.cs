@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour {
 
     public float crouchRatio = .33f;
 
+    public GameObject gunHolder;
+
     private CharacterController charCon;
 
     private float horDir;
@@ -28,9 +30,13 @@ public class PlayerController : MonoBehaviour {
     private Vector3 crouchVector;
     private float defaultHeight;
 
+    private Vector3 gunLocOffset;
+
     void Start() {
         charCon = GetComponent<CharacterController>();
-        defaultHeight = transform.localScale.y;
+        defaultHeight = charCon.height;
+        gunHolder.transform.position = playerCam.position;
+        //gunLocOffset = gunHolder.transform.position - transform.position;
     }
 
     void Update() {
@@ -59,13 +65,12 @@ public class PlayerController : MonoBehaviour {
         charCon.Move(direction * Time.deltaTime * moveSpeed);
 
         if (Input.GetButton("Crouch")) {
-            crouchVector = transform.localScale;
-            crouchVector.y = defaultHeight * crouchRatio;
-            transform.localScale = crouchVector;
+            charCon.height = defaultHeight * crouchRatio;
         } else {
-            crouchVector = transform.localScale;
-            crouchVector.y = defaultHeight;
-            transform.localScale = crouchVector;
+            charCon.height = defaultHeight;
         }
+
+        gunHolder.transform.position = Vector3.Lerp(gunHolder.transform.position, playerCam.position + gunLocOffset, .5f);
+        gunHolder.transform.rotation = Quaternion.Lerp(gunHolder.transform.rotation, playerCam.transform.rotation, .5f);
     }
 }
