@@ -32,6 +32,8 @@ public class PlayerController : MonoBehaviour {
 
     private Vector3 gunLocOffset;
 
+    private RaycastHit hit;
+
     void Start() {
         charCon = GetComponent<CharacterController>();
         defaultHeight = charCon.height;
@@ -70,7 +72,17 @@ public class PlayerController : MonoBehaviour {
             charCon.height = defaultHeight;
         }
 
-        gunHolder.transform.position = Vector3.Lerp(gunHolder.transform.position, playerCam.position + gunLocOffset, .5f);
-        gunHolder.transform.rotation = Quaternion.Lerp(gunHolder.transform.rotation, playerCam.transform.rotation, .5f);
+        gunHolder.transform.position = Vector3.Lerp(gunHolder.transform.position, playerCam.position + gunLocOffset, .8f);
+        gunHolder.transform.rotation = Quaternion.Slerp(gunHolder.transform.rotation, playerCam.transform.rotation, .35f);
+
+        if(Input.GetMouseButton(0)) {
+            if(Physics.Raycast(playerCam.position, playerCam.forward, out hit)) {
+                if(hit.collider.tag == "Enemy") {
+                    Debug.Log("hit");
+                } else {
+                    Debug.Log("miss");
+                }
+            }
+        }
     }
 }
