@@ -16,6 +16,9 @@ public class PlayerController : MonoBehaviour {
 
     public GameObject gunHolder;
 
+    public Transform gunMuzzleLoc;
+    public LineRenderer tracerRound;
+
     private CharacterController charCon;
 
     private float horDir;
@@ -33,6 +36,8 @@ public class PlayerController : MonoBehaviour {
     private Vector3 gunLocOffset;
 
     private RaycastHit hit;
+
+    private Vector3[] tracerPositions = new Vector3[2];
 
     void Start() {
         charCon = GetComponent<CharacterController>();
@@ -75,9 +80,20 @@ public class PlayerController : MonoBehaviour {
         gunHolder.transform.position = Vector3.Lerp(gunHolder.transform.position, playerCam.position + gunLocOffset, .8f);
         gunHolder.transform.rotation = Quaternion.Slerp(gunHolder.transform.rotation, playerCam.transform.rotation, .35f);
 
-        if(Input.GetMouseButton(0)) {
+        //tracerRound.enabled = false;
+
+        if(Input.GetMouseButtonDown(0)) {
             if(Physics.Raycast(playerCam.position, playerCam.forward, out hit)) {
-                if(hit.collider.tag == "Enemy") {
+                //tracerRound.enabled = true;
+                tracerPositions = new Vector3[2] { Vector3.zero, hit.point };
+                tracerRound.SetPositions(tracerPositions);
+
+                /*
+                Debug.DrawLine(gunMuzzleLoc.position, hit.point, Color.red, 17f);
+                Debug.Log(hit.transform);
+                */
+
+                if (hit.collider.tag == "Enemy") {
                     Debug.Log("hit");
                 } else {
                     Debug.Log("miss");
