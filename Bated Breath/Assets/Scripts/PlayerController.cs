@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
@@ -25,6 +26,10 @@ public class PlayerController : MonoBehaviour {
     public float fireRate = 3f;
     public float effectDisplayTime = 3f;
 
+    public int startingAmmo = 6;
+
+    public Text ammoText;
+
     private CharacterController charCon;
 
     private float horDir;
@@ -47,11 +52,19 @@ public class PlayerController : MonoBehaviour {
 
     private float timeSinceShot = 0f;
 
+    private int currentAmmo;
+
+    public Image crosshair;
+
+    public Animator gunAnimator;
+
     void Start() {
         charCon = GetComponent<CharacterController>();
         defaultHeight = charCon.height;
         gunHolder.transform.position = playerCam.position;
         gunLocOffset = gun.localPosition;
+        currentAmmo = startingAmmo;
+        ammoText.text = "Ammo: " + currentAmmo;
     }
 
     void Update() {
@@ -90,8 +103,18 @@ public class PlayerController : MonoBehaviour {
 
         if (Input.GetMouseButton(1)) {
             gun.localPosition = Vector3.Lerp(gun.localPosition, gun.InverseTransformPoint(ADSLocation.position), .35f);
+
+            Color tempColor;
+            tempColor = crosshair.color;
+            tempColor.a = Mathf.Lerp(tempColor.a, 0f, .35f);
+            crosshair.color = tempColor;
         } else {
             gun.localPosition = Vector3.Lerp(gun.localPosition, gunLocOffset, .3f);
+
+            Color tempColor;
+            tempColor = crosshair.color;
+            tempColor.a = Mathf.Lerp(tempColor.a, 1f, .35f);
+            crosshair.color = tempColor;
         }
 
         gunHolder.transform.rotation = Quaternion.Slerp(gunHolder.transform.rotation, playerCam.transform.rotation, .35f);
@@ -99,7 +122,7 @@ public class PlayerController : MonoBehaviour {
 
         // Much of the logic for effects and fire rate comes from this tutorial:
         // https://www.youtube.com/watch?v=l86gpYbQFzY
-        if (Input.GetMouseButton(0) && timeSinceShot >= fireRate) {
+        if (Input.GetMouseButton(0) && timeSinceShot >= fireRate && (currentAmmo > 0)) {
             Shoot();
         }
 
@@ -111,7 +134,9 @@ public class PlayerController : MonoBehaviour {
     }
 
     void Shoot() {
+        gunAnimator.Play("Shoot");
         timeSinceShot = 0f;
+        currentAmmo--;
 
         if (Physics.Raycast(playerCam.position, playerCam.forward, out hit)) {
             tracerRound.gameObject.SetActive(true);
@@ -125,6 +150,15 @@ public class PlayerController : MonoBehaviour {
             }
         }
 
-        
+        ammoText.text = "Ammo: " + currentAmmo;
+    }
+
+    public void ChangeAmmo(int ammoCount) {
+        currentAmmo += ammoCount;
+        ammoText.text = "Ammo: " + currentAmmo;
+    }
+
+    public void ActivateInvisibility() {
+
     }
 }
