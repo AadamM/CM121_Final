@@ -12,12 +12,18 @@ public class PlayerController : MonoBehaviour {
 
     public Transform playerCam;
 
+    public Transform ADSLocation;
+
     public float crouchRatio = .33f;
 
     public GameObject gunHolder;
+    public Transform gun;
 
     public Transform gunMuzzleLoc;
     public LineRenderer tracerRound;
+
+    public float fireRate = 3f;
+    public float effectDisplayTime = 3f;
 
     private CharacterController charCon;
 
@@ -39,14 +45,17 @@ public class PlayerController : MonoBehaviour {
 
     private Vector3[] tracerPositions = new Vector3[2];
 
+    private float timeSinceShot = 0f;
+
     void Start() {
         charCon = GetComponent<CharacterController>();
         defaultHeight = charCon.height;
         gunHolder.transform.position = playerCam.position;
-        //gunLocOffset = gunHolder.transform.position - transform.position;
+        gunLocOffset = gun.localPosition;
     }
 
     void Update() {
+
         horDir = Input.GetAxis("Horizontal");
         forDir = Input.GetAxis("Vertical");
 
@@ -77,28 +86,45 @@ public class PlayerController : MonoBehaviour {
             charCon.height = defaultHeight;
         }
 
-        gunHolder.transform.position = Vector3.Lerp(gunHolder.transform.position, playerCam.position + gunLocOffset, .8f);
+        gunHolder.transform.position = Vector3.Lerp(gunHolder.transform.position, playerCam.position, .8f);
+
+        if (Input.GetMouseButton(1)) {
+            gun.localPosition = Vector3.Lerp(gun.localPosition, gun.InverseTransformPoint(ADSLocation.position), .35f);
+        } else {
+            gun.localPosition = Vector3.Lerp(gun.localPosition, gunLocOffset, .3f);
+        }
+
         gunHolder.transform.rotation = Quaternion.Slerp(gunHolder.transform.rotation, playerCam.transform.rotation, .35f);
 
-        //tracerRound.enabled = false;
 
-        if(Input.GetMouseButtonDown(0)) {
-            if(Physics.Raycast(playerCam.position, playerCam.forward, out hit)) {
-                //tracerRound.enabled = true;
-                tracerPositions = new Vector3[2] { Vector3.zero, hit.point };
-                tracerRound.SetPositions(tracerPositions);
+        // Much of the logic for effects and fire rate comes from this tutorial:
+        // https://www.youtube.com/watch?v=l86gpYbQFzY
+        if (Input.GetMouseButton(0) && timeSinceShot >= fireRate) {
+            Shoot();
+        }
 
-                /*
-                Debug.DrawLine(gunMuzzleLoc.position, hit.point, Color.red, 17f);
-                Debug.Log(hit.transform);
-                */
+        if(timeSinceShot >= effectDisplayTime) {
+            tracerRound.gameObject.SetActive(false);
+        }
 
-                if (hit.collider.tag == "Enemy") {
-                    Debug.Log("hit");
-                } else {
-                    Debug.Log("miss");
-                }
+        timeSinceShot += Time.deltaTime;
+    }
+
+    void Shoot() {
+        timeSinceShot = 0f;
+
+        if (Physics.Raycast(playerCam.position, playerCam.forward, out hit)) {
+            tracerRound.gameObject.SetActive(true);
+            tracerPositions = new Vector3[2] { gunMuzzleLoc.position, hit.point };
+            tracerRound.SetPositions(tracerPositions);
+
+            if (hit.collider.tag == "Enemy") {
+                Debug.Log("hit");
+            } else {
+                Debug.Log("miss");
             }
         }
+
+        
     }
 }
