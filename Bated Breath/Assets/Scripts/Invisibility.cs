@@ -11,7 +11,7 @@ public class Invisibility : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other) {
         if (other.tag == "Player") {
-            playerController.ActivateInvisibility();
+            playerController.StartCoroutine(playerController.ActivateInvisibility());
             Destroy(gameObject);
         }
     }

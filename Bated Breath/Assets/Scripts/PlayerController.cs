@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour {
 
     public GameObject gunHolder;
     public Transform gun;
+    public GameObject gunModel;
 
     public Transform gunMuzzleLoc;
     public LineRenderer tracerRound;
@@ -57,6 +58,11 @@ public class PlayerController : MonoBehaviour {
     public Image crosshair;
 
     public Animator gunAnimator;
+
+    public bool isInvisible;
+
+    public Material visibleMaterial;
+    public Material invisibleMaterial;
 
     void Start() {
         charCon = GetComponent<CharacterController>();
@@ -144,9 +150,10 @@ public class PlayerController : MonoBehaviour {
             tracerRound.SetPositions(tracerPositions);
 
             if (hit.collider.tag == "Enemy") {
-                Debug.Log("hit");
-            } else {
-                Debug.Log("miss");
+                EnemyBehavior enemyBehavior = hit.collider.gameObject.GetComponentInParent<EnemyBehavior>();
+                if (enemyBehavior != null) {
+                    enemyBehavior.StartCoroutine(enemyBehavior.Stun());
+                }
             }
         }
 
@@ -158,7 +165,19 @@ public class PlayerController : MonoBehaviour {
         ammoText.text = "Ammo: " + currentAmmo;
     }
 
-    public void ActivateInvisibility() {
+    public IEnumerator ActivateInvisibility() {
+        isInvisible = true;
+        foreach (MeshRenderer modelPart in gunModel.GetComponentsInChildren<MeshRenderer>()) {
+            modelPart.material = invisibleMaterial;
+        }
 
+        yield return new WaitForSeconds(5);
+
+        isInvisible = false;
+        foreach (MeshRenderer modelPart in gunModel.GetComponentsInChildren<MeshRenderer>()) {
+            modelPart.material = visibleMaterial;
+        }
+
+        yield return null;
     }
 }

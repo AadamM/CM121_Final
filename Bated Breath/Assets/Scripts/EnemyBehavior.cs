@@ -27,6 +27,7 @@ public class EnemyBehavior : MonoBehaviour {
     private Color defaultLightColor;
 
     private Vector3[] waypoints;
+    private bool isStunned;
 
     void Start() {
         waypoints = new Vector3[pathContainer.childCount];
@@ -46,6 +47,10 @@ public class EnemyBehavior : MonoBehaviour {
             spotLight.color = defaultLightColor;
             detectedText.text = "* Whistling *";
         }
+
+        if (isStunned) {
+            detectedText.text = "I am stunned! Ah...";
+        }
     }
 
     IEnumerator FollowPath (Vector3[] waypoints) {
@@ -57,7 +62,9 @@ public class EnemyBehavior : MonoBehaviour {
         transform.LookAt(targetWaypoint, Vector3.up);
 
         while (true) {
-            transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
+            if (!isStunned) {
+                transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
+            }
 
             if(transform.position == targetWaypoint) {
                 targetWaypointIndex = (targetWaypointIndex + 1) % waypoints.Length;
@@ -102,8 +109,9 @@ public class EnemyBehavior : MonoBehaviour {
         if(Vector3.Distance(transform.position, player.position) < viewDistance) {
             Vector3 directionToPlayer = (player.position - transform.position).normalized;
             float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+            PlayerController playerController = FindObjectOfType<PlayerController>();
 
-            if(angleToPlayer < viewAngle / 2f) {
+            if(angleToPlayer < viewAngle / 2f && !playerController.isInvisible) {
                 if(!Physics.Linecast(transform.position, player.position, viewMask)) {
                     return true;
                 }
@@ -111,5 +119,12 @@ public class EnemyBehavior : MonoBehaviour {
         }
 
         return false;
+    }
+
+    public IEnumerator Stun() {
+        isStunned = true;
+        yield return new WaitForSeconds(3f);
+        isStunned = false;
+        yield return null;
     }
 }
