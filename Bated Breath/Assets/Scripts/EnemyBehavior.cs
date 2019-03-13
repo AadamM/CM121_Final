@@ -113,6 +113,7 @@ public class EnemyBehavior : MonoBehaviour {
 
             if(angleToPlayer < viewAngle / 2f && !playerController.isInvisible) {
                 if(!Physics.Linecast(transform.position, player.position, viewMask)) {
+                    playerController.AddDetectTime();
                     return true;
                 }
             }

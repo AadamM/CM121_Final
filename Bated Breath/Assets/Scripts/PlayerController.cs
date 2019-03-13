@@ -30,6 +30,8 @@ public class PlayerController : MonoBehaviour {
     public int startingAmmo = 6;
 
     public Text ammoText;
+    public Text timeUntilLose;
+    public Text loseText;
 
     private CharacterController charCon;
 
@@ -64,6 +66,8 @@ public class PlayerController : MonoBehaviour {
     public Material visibleMaterial;
     public Material invisibleMaterial;
 
+    private float detectionTime;
+
     void Start() {
         charCon = GetComponent<CharacterController>();
         defaultHeight = charCon.height;
@@ -71,6 +75,8 @@ public class PlayerController : MonoBehaviour {
         gunLocOffset = gun.localPosition;
         currentAmmo = startingAmmo;
         ammoText.text = "Ammo: " + currentAmmo;
+        detectionTime = 3f;
+        timeUntilLose.text = "Time Until Failure: " + detectionTime.ToString() + "s";
     }
 
     void Update() {
@@ -179,5 +185,14 @@ public class PlayerController : MonoBehaviour {
         }
 
         yield return null;
+    }
+
+    public void AddDetectTime() {
+        detectionTime -= Time.deltaTime;
+        timeUntilLose.text = "Time Until Failure: " + detectionTime.ToString() + "s";
+        if(detectionTime <= 0f) {
+            loseText.gameObject.SetActive(true);
+            detectionTime = 0f;
+        }
     }
 }
