@@ -2968,6 +2968,7 @@ GameObject:
   - component: {fileID: 534669904}
   - component: {fileID: 534669903}
   - component: {fileID: 534669906}
+  - component: {fileID: 534669907}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3099,6 +3100,25 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
+--- !u!95 &534669907
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 534669902}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7dec6c5eb4918d642bf16c9b55b1a9d2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &541888677
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9242,6 +9262,7 @@ MonoBehaviour:
   loseText: {fileID: 947179124}
   crosshair: {fileID: 1167084925}
   gunAnimator: {fileID: 465932903}
+  cameraAnimator: {fileID: 534669907}
   isInvisible: 0
   visibleMaterial: {fileID: 2100000, guid: 68db4c702af00b642aac3db9d705fdf6, type: 2}
   invisibleMaterial: {fileID: 2100000, guid: f7e6f811c10f00b49ac38b262d9e49f4, type: 2}

@@ -60,6 +60,7 @@ public class PlayerController : MonoBehaviour {
     public Image crosshair;
 
     public Animator gunAnimator;
+    public Animator cameraAnimator;
 
     public bool isInvisible;
 
@@ -67,6 +68,8 @@ public class PlayerController : MonoBehaviour {
     public Material invisibleMaterial;
 
     private float detectionTime;
+
+    private bool isCrouching;
 
     void Start() {
         charCon = GetComponent<CharacterController>();
@@ -105,15 +108,24 @@ public class PlayerController : MonoBehaviour {
 
         charCon.Move(direction * Time.deltaTime * moveSpeed);
 
-        if (Input.GetButton("Crouch")) {
+        if (Input.GetButtonDown("Crouch")) {
+            isCrouching = !isCrouching;
+        }
+
+        if (isCrouching) {
             charCon.height = defaultHeight * crouchRatio;
         } else {
             charCon.height = defaultHeight;
         }
 
+        if((Mathf.Abs(Input.GetAxis("Vertical")) > .3f) && charCon.isGrounded) {
+            cameraAnimator.Play("Bob");
+        }
+
         gunHolder.transform.position = Vector3.Lerp(gunHolder.transform.position, playerCam.position, .8f);
 
-        if (Input.GetMouseButton(1)) {
+
+        if (Input.GetAxis("Fire2") > .5f) {
             gun.localPosition = Vector3.Lerp(gun.localPosition, gun.InverseTransformPoint(ADSLocation.position), .35f);
 
             Color tempColor;
@@ -134,7 +146,7 @@ public class PlayerController : MonoBehaviour {
 
         // Much of the logic for effects and fire rate comes from this tutorial:
         // https://www.youtube.com/watch?v=l86gpYbQFzY
-        if (Input.GetMouseButton(0) && timeSinceShot >= fireRate && (currentAmmo > 0)) {
+        if ((Input.GetAxis("Fire1") > .5f) && timeSinceShot >= fireRate && (currentAmmo > 0)) {
             Shoot();
         }
 
