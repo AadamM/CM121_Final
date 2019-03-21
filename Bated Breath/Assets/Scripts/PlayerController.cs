@@ -126,7 +126,7 @@ public class PlayerController : MonoBehaviour {
         if((Mathf.Abs(Input.GetAxis("Vertical")) > .3f) && charCon.isGrounded) {
             cameraAnimator.Play("Bob");
         } else {
-            cameraAnimator.Play("None");
+            cameraAnimator.Play(-1);
         }
 
         gunHolder.transform.position = Vector3.Lerp(gunHolder.transform.position, playerCam.position, .8f);
