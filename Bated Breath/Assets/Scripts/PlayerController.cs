@@ -71,6 +71,10 @@ public class PlayerController : MonoBehaviour {
 
     private bool isCrouching;
 
+    public Text scoreText;
+
+    public int score;
+
     void Start() {
         charCon = GetComponent<CharacterController>();
         defaultHeight = charCon.height;
@@ -78,6 +82,7 @@ public class PlayerController : MonoBehaviour {
         gunLocOffset = gun.localPosition;
         currentAmmo = startingAmmo;
         ammoText.text = "Ammo: " + currentAmmo;
+        scoreText.text = "Score: " + score;
         detectionTime = 3f;
         timeUntilLose.text = "Time Until Failure: " + detectionTime.ToString() + "s";
     }
@@ -120,6 +125,8 @@ public class PlayerController : MonoBehaviour {
 
         if((Mathf.Abs(Input.GetAxis("Vertical")) > .3f) && charCon.isGrounded) {
             cameraAnimator.Play("Bob");
+        } else {
+            cameraAnimator.Play("None");
         }
 
         gunHolder.transform.position = Vector3.Lerp(gunHolder.transform.position, playerCam.position, .8f);
@@ -181,9 +188,14 @@ public class PlayerController : MonoBehaviour {
     public void ChangeAmmo(int ammoCount) {
         currentAmmo += ammoCount;
         ammoText.text = "Ammo: " + currentAmmo;
+        score += ammoCount * 5;
+        scoreText.text = "Score: " + score;
     }
 
     public IEnumerator ActivateInvisibility() {
+        score += 15;
+        scoreText.text = "Score: " + score;
+
         isInvisible = true;
         foreach (MeshRenderer modelPart in gunModel.GetComponentsInChildren<MeshRenderer>()) {
             modelPart.material = invisibleMaterial;
@@ -201,7 +213,7 @@ public class PlayerController : MonoBehaviour {
 
     public void AddDetectTime() {
         detectionTime -= Time.deltaTime;
-        timeUntilLose.text = "Time Until Failure: " + detectionTime.ToString() + "s";
+        timeUntilLose.text = "Time Until Failure: " + detectionTime.ToString("F2") + "s";
         if(detectionTime <= 0f) {
             loseText.gameObject.SetActive(true);
             detectionTime = 0f;

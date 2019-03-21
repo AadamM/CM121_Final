@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using TMPro;
 
 // This script is a slighly modified version of the code seen in Sebastian Lague's stealth game tutorial:
@@ -15,7 +16,7 @@ public class EnemyBehavior : MonoBehaviour {
 
     public Transform pathContainer;
 
-    public Transform player;
+    private Transform player;
 
     public Light spotLight;
     public float viewDistance = 10f;
@@ -37,6 +38,7 @@ public class EnemyBehavior : MonoBehaviour {
         StartCoroutine(FollowPath(waypoints));
         viewAngle = spotLight.spotAngle;
         defaultLightColor = spotLight.color;
+        player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     void Update() {
@@ -64,13 +66,13 @@ public class EnemyBehavior : MonoBehaviour {
         while (true) {
             if (!isStunned) {
                 transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
-            }
 
-            if(transform.position == targetWaypoint) {
-                targetWaypointIndex = (targetWaypointIndex + 1) % waypoints.Length;
-                targetWaypoint = waypoints[targetWaypointIndex];
-                yield return new WaitForSeconds(waitTime);
-                yield return StartCoroutine(TurnToward(targetWaypoint));
+                if (transform.position == targetWaypoint) {
+                    targetWaypointIndex = (targetWaypointIndex + 1) % waypoints.Length;
+                    targetWaypoint = waypoints[targetWaypointIndex];
+                    yield return new WaitForSeconds(waitTime);
+                    yield return StartCoroutine(TurnToward(targetWaypoint));
+                }
             }
 
             yield return null;
